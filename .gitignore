@@ -1,3 +1,5 @@
 .env
 node_modules/
 seen_campaigns.json
+.playwright-mcp/
+monitor.log
