@@ -85,6 +85,8 @@ kill $(pgrep -f monitor.js)
 2. 按 `F12` 打开 DevTools → Application → Cookie
 3. 找到 `access_token`，复制值填入 `.env`
 
+![获取 access_token](access.png)
+
 > Token 有效期约 7 天，过期前 24 小时会自动推送提醒。
 
 ## 获取 Twitter API 凭证
