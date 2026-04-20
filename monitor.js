@@ -166,15 +166,22 @@ async function tryGrab(campaign) {
   const json = await gql(mutation, { campaignId: campaign.id });
 
   if (json.errors)
-    return { ok: false, msg: `占位失败: ${json.errors[0].message}` };
+    return { ok: false, msg: `占位失败: ${json.errors[0].message}`, reason: "error" };
   if (isTweet) {
     const s = json.data.grabTweetCampaign.grabStatus;
-    return { ok: true, msg: `占位成功 (${s})` };
+    return { ok: true, msg: `占位成功 (${s})`, reason: "ok" };
   }
-  const reserved = json.data.reserveEngagementSlot.reserved;
-  return reserved
-    ? { ok: true, msg: "占位成功" }
-    : { ok: false, msg: "占位失败(已满或冷却中)" };
+  const data = json.data.reserveEngagementSlot;
+  if (data.reserved) return { ok: true, msg: "占位成功", reason: "ok" };
+
+  // Cooldown → keep retrying until reserved or truly full
+  const cd = data.cooldownSeconds;
+  if (cd && cd > 0) {
+    console.log(`  ⏳ 冷却中 (${cd}s)，等待后重试...`);
+    await new Promise((r) => setTimeout(r, cd * 1000));
+    return tryGrab(campaign); // recursive retry until full or success
+  }
+  return { ok: false, msg: "占位失败(已满)", reason: "full" };
 }
 
 async function sendWechat(text) {
@@ -418,6 +425,12 @@ async function poll() {
 
       const result = await tryGrab(c);
       console.log(`  🤖 自动占位 ${name}: ${result.msg}`);
+
+      // If full, just skip silently (add to seen so we don't retry)
+      if (result.reason === "full") {
+        seen.add(c.id);
+        continue;
+      }
 
       lines.push(
         `📢 ${name} - ${c.title || ""}\n` +
