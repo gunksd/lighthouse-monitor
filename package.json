@@ -1,0 +1,23 @@
+{
+  "name": "lighthouse-monitor",
+  "version": "1.0.0",
+  "description": "监控 [Lighthouse (lhdao)](https://app.lhdao.top/campaigns) 平台新任务，自动占位并推送到企业微信。",
+  "main": "monitor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gunksd/lighthouse-monitor.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gunksd/lighthouse-monitor/issues"
+  },
+  "homepage": "https://github.com/gunksd/lighthouse-monitor#readme",
+  "dependencies": {
+    "undici": "^8.1.0"
+  }
+}
